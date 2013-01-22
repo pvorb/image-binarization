@@ -7,6 +7,15 @@ binarization_ algorithms. Currently, it only supports Sauvola's method.
 ![Screenshot](https://raw.github.com/pvorb/image-binarization/master/screenshot.png)
 
 
+Download
+--------
+
+You can download the
+[runnable JAR file](https://repo.vorb.de/downloads/image-binarization.jar) or
+install the application
+[via Java Web Start](https://repo.vorb.de/downloads/image-binarization.jnlp).
+
+
 Requirements
 ------------
 
