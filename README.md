@@ -4,7 +4,7 @@ image-binarization
 This is a small Scala program that implements different _adaptive image
 binarization_ algorithms. Currently, it only supports Sauvola's method.
 
-![Screenshot](https://raw.github.com/pvorb/subpixel-illustrator/master/screenshot.png)
+![Screenshot](https://raw.github.com/pvorb/image-binarization/master/screenshot.png)
 
 
 Requirements
