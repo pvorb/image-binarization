@@ -1,26 +1,15 @@
 package de.vorb.vision.binarization
 
-import java.awt.Dimension
-import java.io.File
-import scala.swing.{ BoxPanel, Button, ComboBox, FileChooser, FlowPanel, Label, MainFrame, Orientation, SimpleSwingApplication }
-import scala.swing.event.ButtonClicked
-import javax.imageio.ImageIO
-import javax.swing.{ JOptionPane, UIManager }
-import javax.swing.filechooser.FileFilter
-import scala.swing.Dialog
-import javax.swing.ImageIcon
-import scala.swing.FormattedTextField
-import java.text.Format
-import scala.swing.TextField
-import javax.swing.InputVerifier
-import javax.swing.JComponent
-import javax.swing.JTextField
-import scala.swing.Component
-import java.awt.Color
-import java.io.IOException
+import java.awt.{ Color, Desktop }
 import java.awt.image.BufferedImage
-import scala.swing.CheckBox
-import java.awt.Desktop
+import java.io.{ File, IOException }
+
+import scala.swing.{ BoxPanel, Button, CheckBox, ComboBox, Component, Dialog, FileChooser, FlowPanel, Label, MainFrame, Orientation, SimpleSwingApplication, TextField }
+import scala.swing.event.ButtonClicked
+
+import javax.imageio.ImageIO
+import javax.swing.{ ImageIcon, JOptionPane, UIManager }
+import javax.swing.filechooser.FileFilter
 
 object GUI extends SimpleSwingApplication {
   try {
