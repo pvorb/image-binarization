@@ -1,8 +1,8 @@
 image-binarization
 ==================
 
-This is a small Scala program that implements different _adaptive image
-binarization_ algorithms. Currently, it only supports Sauvola's method.
+This is a small Scala program that implements Sauvola's method for image
+binarization.
 
 ![Screenshot](https://raw.github.com/pvorb/image-binarization/master/screenshot.png)
 
@@ -30,7 +30,8 @@ Usage
     ![Example input](https://raw.github.com/pvorb/image-binarization/master/src/test/resources/color.png)
 
  2. You can preview the output image, by clicking the preview button
- 3. Adjust the coefficient (any decimal number between 0.2 and 0.5)
+ 3. Adjust the coefficient (any decimal number between 0.2 and 0.5) and window
+    size (any odd integer between 3 and 19).
  4. Hit “Save ...” and choose a destination for the resulting PNG image.
 
 Here's the result of our example
