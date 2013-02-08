@@ -1,16 +1,15 @@
 package de.vorb.vision.binarization
 
-import java.awt.{ Color, Cursor, Desktop }
+import java.awt.{Color, Cursor, Desktop}
 import java.awt.image.BufferedImage
-import java.io.{ File, IOException }
-import scala.swing.{ BoxPanel, Button, CheckBox, Component, Dialog, FileChooser, FlowPanel, Label, MainFrame, MenuBar, Orientation, SimpleSwingApplication, TextField }
+import java.io.{File, IOException}
+
+import scala.swing.{Action, BoxPanel, Button, CheckBox, Component, Dialog, FileChooser, FlowPanel, Label, MainFrame, MenuBar, MenuItem, Orientation, SimpleSwingApplication, TextField}
 import scala.swing.event.ButtonClicked
+
 import javax.imageio.ImageIO
-import javax.swing.{ ImageIcon, JOptionPane, UIManager }
+import javax.swing.{ImageIcon, JOptionPane, UIManager}
 import javax.swing.filechooser.FileFilter
-import scala.swing.Menu
-import scala.swing.MenuItem
-import scala.swing.Action
 
 object GUI extends SimpleSwingApplication {
   try {
@@ -83,7 +82,7 @@ object GUI extends SimpleSwingApplication {
       inputVerifier = (c: Component) => c match {
         case c: TextField => try {
           val w = c.text.toInt
-          if (w <= 19 && w % 2 == 1) {
+          if (w >= 3 && w <= 19 && w % 2 == 1) {
             c.background = valid
             true
           } else {
