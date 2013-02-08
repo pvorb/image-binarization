@@ -3,6 +3,8 @@ package de.vorb.vision.binarization
 import java.awt.image.BufferedImage
 import java.awt.color.ColorSpace
 import java.awt.Color
+import java.awt.image.ColorConvertOp
+import java.awt.image.ColorModel
 
 case class Pixel(x: Int, y: Int) {
   require(x >= 0 && y >= 0, "No negative coordinates.")
@@ -11,37 +13,47 @@ case class Window(seq: Seq[Int])
 
 object Sauvola extends BinarizationAlgorithm {
   def name = "Sauvola"
-  
-  val R = 128
-  val radius = 4
 
-  def binarize(src: BufferedImage, k: Double): BufferedImage = {
+  val R = 128
+
+  def binarize(src: BufferedImage, k: Double, radius: Int): BufferedImage = {
     //require(src.get,
     //  "Source image must be grayscale")
     require(k >= 0.2 && k <= 0.5, "k must be in interval [0.2, 0.5]")
 
-    val dest = new BufferedImage(src.getWidth, src.getHeight,
+    val in = new BufferedImage(src.getWidth, src.getHeight,
+      BufferedImage.TYPE_BYTE_GRAY)
+
+    src.getType match {
+      case BufferedImage.TYPE_BYTE_GRAY => src
+      case _ =>
+        val transformation =
+          new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+            ColorSpace.getInstance(ColorSpace.CS_GRAY), null).filter(src, in)
+    }
+
+    val out = new BufferedImage(src.getWidth, src.getHeight,
       BufferedImage.TYPE_BYTE_BINARY)
 
     for {
       x <- 0 until src.getWidth
       y <- 0 until src.getHeight
-      g = binarize(src, Pixel(x, y), k)
+      g = binarize(in, Pixel(x, y), k, radius)
     } {
-      dest.setRGB(x, y, g)
+      out.setRGB(x, y, g)
     }
 
-    dest
+    out
   }
 
-  private def binarize(src: BufferedImage, px: Pixel, k: Double): Int = {
-    val w = window(src, px)
+  private def binarize(src: BufferedImage, px: Pixel, k: Double, radius: Int): Int = {
+    val w = window(src, px, radius)
     val c = color(src, px)
     if (intensity(c) <= threshold(w, k)) 0
     else 0xFFFFFF
   }
 
-  private def window(src: BufferedImage, px: Pixel): Window = Window {
+  private def window(src: BufferedImage, px: Pixel, radius: Int): Window = Window {
     val res = new Array[Int]((radius * 2 + 1) * (radius * 2 + 1))
 
     val xMin = 0 max (px.x - radius)

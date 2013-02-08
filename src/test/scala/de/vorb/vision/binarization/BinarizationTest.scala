@@ -27,7 +27,7 @@ object BinarizationTest extends App {
   println("done.")
 
   print("Image binarization... ")
-  val bin = Sauvola.binarize(gray, 0.2);
+  val bin = Sauvola.binarize(gray, 0.2, 5);
   println("done.")
   
   print("Saving image... ")

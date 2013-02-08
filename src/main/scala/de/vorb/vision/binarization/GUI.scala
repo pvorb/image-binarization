@@ -3,13 +3,12 @@ package de.vorb.vision.binarization
 import java.awt.{ Color, Desktop }
 import java.awt.image.BufferedImage
 import java.io.{ File, IOException }
-
 import scala.swing.{ BoxPanel, Button, CheckBox, ComboBox, Component, Dialog, FileChooser, FlowPanel, Label, MainFrame, Orientation, SimpleSwingApplication, TextField }
 import scala.swing.event.ButtonClicked
-
 import javax.imageio.ImageIO
 import javax.swing.{ ImageIcon, JOptionPane, UIManager }
 import javax.swing.filechooser.FileFilter
+import java.awt.Cursor
 
 object GUI extends SimpleSwingApplication {
   try {
@@ -22,16 +21,38 @@ object GUI extends SimpleSwingApplication {
       iconImage = ImageIO.read(getClass.getResource("/logo.png"))
     } catch { case _: Throwable => }
 
-    val algorithmSelector = new ComboBox[BinarizationAlgorithm](Sauvola :: Nil)
+    val invalid = new Color(0xFFFFAAAA)
+    val valid = new Color(0xFFAAFFAA)
+
+    //val algorithmSelector = new ComboBox[BinarizationAlgorithm](Sauvola :: Nil)
     val coefficient = new TextField(3) {
       text = "0.5"
-      val invalid = new Color(0xFFFFAAAA)
-      val valid = new Color(0xFFAAFFAA)
       tooltip = "a decimal number between 0.2 and 0.5"
       inputVerifier = (c: Component) => c match {
         case c: TextField => try {
           val k = c.text.toDouble
           if (k >= 0.2 && k <= 0.5) {
+            c.background = valid
+            true
+          } else {
+            c.background = invalid
+            false
+          }
+        } catch {
+          case _ =>
+            c.background = invalid
+            false
+        }
+        case _ => false
+      }
+    }
+    val window = new TextField(2) {
+      text = "5"
+      tooltip = "an odd integer number between 3 and 19"
+      inputVerifier = (c: Component) => c match {
+        case c: TextField => try {
+          val w = c.text.toInt
+          if (w <= 19 && w % 2 == 1) {
             c.background = valid
             true
           } else {
@@ -92,11 +113,14 @@ object GUI extends SimpleSwingApplication {
       }
 
       contents += new FlowPanel {
-        contents += new Label("Algorithm")
-        contents += algorithmSelector
+        /*contents += new Label("Algorithm")
+        contents += algorithmSelector*/
 
         contents += new Label("Coefficient")
         contents += coefficient
+
+        contents += new Label("Window size")
+        contents += window
       }
 
       def binarize(src: Option[File], after: BufferedImage => Unit) = {
@@ -104,13 +128,18 @@ object GUI extends SimpleSwingApplication {
           case None => warnNoInputFile()
           case Some(file) => try {
             val in = ImageIO.read(file)
-            val alg = algorithmSelector.selection.item
+            val alg = Sauvola // algorithmSelector.selection.item
             val k =
               if (coefficient.inputVerifier(coefficient))
                 coefficient.text.toDouble
               else
-                throw new IllegalArgumentException("k invalid")
-            val out = alg.binarize(in, 0.2)
+                throw new IllegalArgumentException("k")
+            val r =
+              if (window.inputVerifier(window))
+                window.text.toInt / 2
+              else
+                throw new IllegalArgumentException("w")
+            val out = alg.binarize(in, k, r)
             after(out)
           } catch {
             case e: IOException =>
@@ -119,10 +148,16 @@ object GUI extends SimpleSwingApplication {
                 "Invalid file format",
                 JOptionPane.ERROR_MESSAGE)
             case e: IllegalArgumentException =>
-              JOptionPane.showMessageDialog(self,
-                "Coefficient must be between 0.2 and 0.5",
-                "Invalid coefficient",
-                JOptionPane.WARNING_MESSAGE)
+              e.getMessage match {
+                case "k" => JOptionPane.showMessageDialog(self,
+                  "Coefficient must be between 0.2 and 0.5",
+                  "Invalid coefficient",
+                  JOptionPane.WARNING_MESSAGE)
+                case "w" => JOptionPane.showMessageDialog(self,
+                  "Window must be an odd integer between 3 and 19",
+                  "Invalid window size",
+                  JOptionPane.WARNING_MESSAGE)
+              }
           }
         }
       }
@@ -131,7 +166,8 @@ object GUI extends SimpleSwingApplication {
         contents += new Button("Preview") {
           reactions += {
             case ButtonClicked(b) =>
-              binarize(src, (out: BufferedImage) =>
+              cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
+              binarize(src, (out: BufferedImage) => {
                 new Dialog(top) {
                   title = "Preview"
                   contents = new Label {
@@ -141,13 +177,16 @@ object GUI extends SimpleSwingApplication {
 
                   centerOnScreen()
                   visible = true
-                })
+                }
+                cursor = Cursor.getDefaultCursor
+              })
           }
         }
 
         contents += new Button("Save as ...") {
           reactions += {
             case ButtonClicked(b) =>
+              cursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)
 
               val fc = new FileChooser {
                 title = "Save result"
@@ -164,7 +203,7 @@ object GUI extends SimpleSwingApplication {
                   else
                     fc.selectedFile
 
-                binarize(src, (out: BufferedImage) => {
+                binarize(src, (out: BufferedImage) =>
                   try {
                     ImageIO.write(out, "PNG", destination)
 
@@ -183,8 +222,9 @@ object GUI extends SimpleSwingApplication {
                       "The result cannot be saved to the selected location.",
                       "Missing permissions",
                       JOptionPane.ERROR_MESSAGE)
-                  }
-                })
+                  } finally {
+                    cursor = Cursor.getDefaultCursor
+                  })
               }
           }
         }
