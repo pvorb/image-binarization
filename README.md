@@ -11,9 +11,9 @@ Download
 --------
 
 You can download the
-[runnable JAR file](https://repo.vorb.de/downloads/image-binarization.jar) or
+[runnable JAR file](http://repo.vorb.de/downloads/image-binarization.jar) or
 install the application
-[via Java Web Start](https://repo.vorb.de/downloads/image-binarization.jnlp).
+[via Java Web Start](http://repo.vorb.de/downloads/image-binarization.jnlp).
 
 
 Requirements
